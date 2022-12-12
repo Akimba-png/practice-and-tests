@@ -1,5 +1,9 @@
+/* eslint-disable */
+
 function App(): JSX.Element {
-  return <p>Hello, world!</p>;
+  return (
+    <h1>Hello world!</h1>
+  );
 }
 
-export default App;
+export { App };
