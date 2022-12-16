@@ -1,11 +1,13 @@
 /* eslint-disable */
-import { ReduxSlice } from './redux/redux-slice';
+// import { ReduxSlice } from './redux/redux-slice';
+import { ReduxQuery } from './redux/redux-query';
 
 function App(): JSX.Element {
   return (
     <>
-      <h1>Hello world!</h1>
-      <ReduxSlice />
+      <h1>Hello World</h1>
+      {/* <ReduxSlice /> */}
+      <ReduxQuery />
     </>
   );
 }
