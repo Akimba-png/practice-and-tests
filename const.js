@@ -11,3 +11,5 @@ const obj = {
   },
   values: [1, 2, [3, 4], 5],
 };
+
+const BASE_URL = 'https://8.react.pages.academy/six-cities';
