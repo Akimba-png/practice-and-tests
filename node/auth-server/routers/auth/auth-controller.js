@@ -1,12 +1,12 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { users } = require('./../../db');
-const { getUserFromDb } = require('./../../util.js');
+const { DbUser, DbToken } = require('./../../db');
+
 
 class AuthController {
   static async addNewUser(req, res) {
     try {
-      if (getUserFromDb(req.body.email, users)) {
+      if (DbUser.isExist(req.body.email)) {
         res.status(400).send('user is already exist');
         return;
       }
@@ -17,7 +17,7 @@ class AuthController {
         email: req.body.email,
         password: hashedPassword,
       };
-      users.push(user);
+      DbUser.add(user);
       res.status(201).send('success');
     } catch (error) {
       res.status(500).send(error);
@@ -30,22 +30,23 @@ class AuthController {
       password: req.body.password,
     };
 
-    const dbData = getUserFromDb(requestedData.email, users);
-    if (!dbData) {
+    const dbUser = DbUser.getOne(requestedData.email);
+    if (!dbUser) {
       res.status(404).send('user not found');
       return;
     }
 
     try {
-      const isPasswordCorrect = await bcrypt.compare(requestedData.password, dbData.password);
+      const isPasswordCorrect = await bcrypt.compare(requestedData.password, dbUser.password);
       if (isPasswordCorrect) {
-        const token = jwt.sign(dbData.id, process.env.ACCESS_JWT_TOKEN);
+        const token = jwt.sign(dbUser.id, process.env.ACCESS_JWT_TOKEN);
         const responseData = {
-          id: dbData.id,
-          name: dbData.name,
-          email: dbData.email,
+          id: dbUser.id,
+          name: dbUser.name,
+          email: dbUser.email,
           token,
         };
+        DbToken.add(token);
         res.status(200).send(responseData);
         return;
       }
@@ -59,6 +60,11 @@ class AuthController {
   static checkAuthentication(req, res) {
     res.send(req.userId);
     return;
+  }
+
+  static unAuthorize(req, res) {
+    DbToken.remove(req.headers['x-token']);
+    res.status(200).send('user is now unauthorized');
   }
 }
 

@@ -1,9 +1,10 @@
 const jwt = require('jsonwebtoken');
+let { DbToken } = require('./../db');
 
 
 const authorizeToken = (req, res, next) => {
   const authToken = req.headers['x-token'];
-  if (!authToken) {
+  if (!authToken || !DbToken.isExist(authToken)) {
     res.status(401).send('user is unauthorized');
     return;
   }
