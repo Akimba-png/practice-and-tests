@@ -1,5 +1,6 @@
 const users = [];
 let tokens = [];
+let offers = [{id: 1, title: 'title 1'}, {id: 2, title: 'title 2'}];
 
 class DbToken {
   static add(tokenToUpdate) {
@@ -28,5 +29,10 @@ class DbUser {
     return users.find((user) => user.email === userEmail);
   }
 }
-module.exports = { DbUser, DbToken };
 
+class DbOffer {
+  static getAll() {
+    return offers;
+  }
+}
+module.exports = { DbUser, DbToken, DbOffer };
