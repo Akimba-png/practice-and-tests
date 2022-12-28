@@ -1,6 +1,6 @@
 class CustomPromise {
   value;
-  queue = [];
+  thenQueue = [];
   #onSuccessBinded = this.#onSuccess.bind(this);
 
   constructor(executor) {
@@ -8,22 +8,17 @@ class CustomPromise {
   }
 
   then(cb) {
-    return new CustomPromise((resolve) => this.queue.push((data) => resolve(cb(data))));
+    return new CustomPromise((resolve) => {
+      this.thenQueue.push((data) => resolve(cb(data)));
+    });
   }
 
   #onSuccess(data) {
-    // console.log(this)
     this.value = data;
     queueMicrotask(() => {
-      this.#runQueue();
-    }
-    );
-  }
-
-  #runQueue() {
-    // console.log(this)
-    this.queue.forEach((cb) => {
-      this.value = cb(this.value)
+      this.thenQueue.forEach((cb) => {
+        this.value = cb(data);
+      });
     });
   }
 }
