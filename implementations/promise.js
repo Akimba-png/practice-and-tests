@@ -15,6 +15,10 @@ class CustomPromise {
 
   #onSuccess(data) {
     this.value = data;
+    if (this.value instanceof CustomPromise) {
+      this.value.then(this.#onSuccessBinded);
+      return;
+    }
     queueMicrotask(() => {
       this.thenQueue.forEach((cb) => {
         this.value = cb(data);
@@ -23,12 +27,13 @@ class CustomPromise {
   }
 }
 
-const createPromise = () => new CustomPromise((resolve) => {
+const createPromise = (value) => new CustomPromise((resolve) => {
   setTimeout(() => {
-    resolve('data');
+    resolve(value);
   }, 3000);
 });
 
-createPromise()
+createPromise('first promise resolved')
+  .then((data) => createPromise(data + ' second promise resolved'))
   .then((data) => data.toUpperCase())
   .then((data) => console.log(data))
